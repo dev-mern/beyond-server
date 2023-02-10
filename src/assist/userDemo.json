@@ -1,0 +1,13 @@
+{
+    "users": [
+        {
+            "fname":"Amir",
+            "lname":"Khan",
+            "email":"amir@gmail.com",
+            "mobile":"847569856",
+            "password":"123456",
+            "referral_id":"",
+            "referenced_by":""
+        }
+    ]
+}
