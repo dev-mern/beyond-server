@@ -1,6 +1,6 @@
-const { addPackageService } = require("../services/packageService");
+const { addPackageService, getAllPackagesService } = require("../services/packageService");
 
-
+// add a new package
 async function addPackageCtl(req,res,next) {
     const package = await addPackageService(req.body);
     
@@ -12,7 +12,19 @@ async function addPackageCtl(req,res,next) {
     return res.status(200).json({success:true,data:package});
 }
 
+// get all packages 
+async function getPackagesCtl(req,res,next) {
+    const packages = await getAllPackagesService();
+    
+    if (!packages.success) {
+        return res.status(500).json(packages);
+    }
+    
+    return res.status(200).json({success:true,error:{},data:packages});
+}
+
 module.exports = {
     addPackageCtl,
+    getPackagesCtl,
 }
 

@@ -15,7 +15,7 @@ function routeSetting(app) {
     app.use("/company",companyRouter);
 
     // Package routes setup
-    app.use("/package",packageRouter);
+    app.use("/packages",packageRouter);
 
     // Package routes setup
     app.use("/order",orderRouter);

@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const { UserModel } = require("../models/userModel");
-const { checkUserExist } = require("../services/userService");
+const { checkUserExist, getUserByEmailService } = require("../services/userService");
 const { env } = require("../utils/env_init");
 const { generateReferralID, generateUserID } = require("../utils/generator");
 const { encryptCryptoString } = require("../utils/incriptor");
@@ -48,9 +48,13 @@ async function checkLogin(req,res,next) {
         const decodedUser = jwt.verify(token,env.jwt_secret);
         
         // find user is real user
-        const isRealUser = await checkUserExist({email:decodedUser.email});
+        // const isRealUser = await checkUserExist({email:decodedUser.email});
+        const isRealUser = await getUserByEmailService(decodedUser.email);
         if (!isRealUser || !isRealUser._id) {
             return res.status(401).json({success:false,error:{common: "Token is not valid"}});
+        }else if (!isRealUser?.verified) {
+            // check if the user is verified
+            return res.status(401).json({success:false,error:{common: "Unverified user"}});
         }
         // add the decoded user to req
         decodedUser._id = isRealUser._id;

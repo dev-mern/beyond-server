@@ -16,8 +16,21 @@ async function addPackageService(package) {
     }
 }
 
+// add a new package
+async function getAllPackagesService(package) {
+    // console.log(package);
+    try {
+        const packages = await PackageModel.find({});
+        return packages;
+    } catch (error) {
+        console.log(error);
+        const formatedErr = errorFormatter(error);
+        return {success:false,error: formatedErr}
+    }
+}
+
 
 module.exports = {
     addPackageService,
-
+    getAllPackagesService,
 }

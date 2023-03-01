@@ -26,7 +26,7 @@ async function startServer() {
     }
 
     // cors allow, json parse
-    app.use(cors({origin:[env.frontend_uri]}));
+    app.use(cors({origin:[env.frontend_uri,env.frontend_uri_dev]}));
     app.use(express.json());
     
     // setup the routes 

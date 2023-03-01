@@ -1,6 +1,7 @@
 const { UserModel } = require("../models/userModel");
 var crypto = require('crypto');
 
+const getRandomNumber = (min, max)=> Math.floor(Math.random() * (max - min + 1)) + min;
 
 function getRandomString(length=10) {
     const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -35,5 +36,5 @@ async function generateReferralID(length=8) {
 
 module.exports = {
     generateReferralID,
-    
+    getRandomNumber,
 }

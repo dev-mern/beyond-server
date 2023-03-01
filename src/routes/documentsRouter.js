@@ -1,5 +1,5 @@
 const express = require("express");
-const { addDocumentsCtl, getDocumentsInfoByUser, getDocsInfoByUserIDandCompanyIDCtl } = require("../controllers/documentsController");
+const { addDocumentsCtl, getDocumentsInfoByUser, getDocsInfoByAccessUserIdCtl, downloadDocbyDocIdCtl, updateDocByDocIdCtl, deleteDocByDocIdCtl } = require("../controllers/documentsController");
 const { checkLogin } = require("../middlewares/authMiddleware");
 const { uploader } = require("../utils/uploader");
 
@@ -21,9 +21,37 @@ documentsRouter.route("/document")
     // .get(checkLogin,getDocumentCtl)
     // .post()
 
+
+
+// get an existing document
+/**
+ *  @path Get "/auth/register"
+ *  @body {}
+ *  @return {}
+ *  @Error {}
+ */
+documentsRouter.route("/document/download/:doc_id")
+    .get(checkLogin,downloadDocbyDocIdCtl)
+    // .post()
+
+// Edit an existing document
+/**
+ *  @path POST "/auth/register"
+ *  @body {}
+ *  @return {}
+ *  @Error {}
+ */
+documentsRouter.route("/document/edit/:doc_id")
+    // .get()
+    .patch(checkLogin,updateDocByDocIdCtl)
+
+documentsRouter.route("/document/delete/:doc_id")
+    // .get()
+    .delete(checkLogin,deleteDocByDocIdCtl)
+
     
 
-// get  document list by user id
+// get  document list by user id (added only by this user)
 /**
  *  @path POST "/auth/register"
  *  @body {}
@@ -34,7 +62,7 @@ documentsRouter.route("/:user_id")
     .get(checkLogin,getDocumentsInfoByUser)
 
 
-// get  document list by user id and company id
+// get company wise document list by access_user_id
 /**
  *  @path POST "/auth/register"
  *  @body {}
@@ -42,7 +70,7 @@ documentsRouter.route("/:user_id")
  *  @Error {}
  */
 documentsRouter.route("/:user_id/:company_id")
-    .get(checkLogin,getDocsInfoByUserIDandCompanyIDCtl)
+    .get(checkLogin,getDocsInfoByAccessUserIdCtl)
 
     
 module.exports = {

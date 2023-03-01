@@ -19,10 +19,20 @@ const fileSchema = mongoose.Schema(
             ref: "Users",
             required: [true, "User id is required"],
         },
+        access:[{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Users",
+            required: [true, "User id is required"],
+
+        }],
         company:{
             type: mongoose.Schema.Types.ObjectId,
             ref: "Companies",
             required: [true, "Company ID is required"],
+        },
+        mimetype:{
+            type: String,
+            required: [true, "Extension is required"],
         },
         category:{
             type: String,

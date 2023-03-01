@@ -31,9 +31,17 @@ const userSchema = mongoose.Schema(
                     const emailRegex =  /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,5})+$/;
                     return emailRegex.test(emailValue);
                 },
-                message:"{VALUE} is not a valid email"
+                message:"{VALUE} is not a valid email",
             }
-            
+        },
+        role:{
+            type: String,
+            required: [true, "Role is required"], 
+            enum:{
+                values: ["user","admin"],
+                message: "User's role must be either 'user' or'admin'!"
+            },
+            default: "user",
         },
         mobile:{
             type: String,
@@ -60,6 +68,10 @@ const userSchema = mongoose.Schema(
             type: Boolean,
             required:[true,"Action is required"],
             default: false
+        },
+        verificationCode:{
+            type: Number,
+            required:[false,"Action is required"]
         },
         company:[{
             type: mongoose.Schema.Types.ObjectId,

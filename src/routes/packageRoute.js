@@ -1,5 +1,5 @@
 const express = require("express");
-const { addPackageCtl } = require("../controllers/packageController");
+const { addPackageCtl, getPackagesCtl } = require("../controllers/packageController");
 
 
 const packageRouter = express.Router();
@@ -14,6 +14,17 @@ const packageRouter = express.Router();
 packageRouter.route("/add")
     .post(addPackageCtl)
     // .get()
+
+// 
+/**
+ *  @path POST "/auth/register"
+ *  @body {}
+ *  @return {}
+ *  @Error {}
+ */
+packageRouter.route("/")
+    .get(getPackagesCtl)
+    // .post(addPackageCtl)
 
 module.exports = {
     packageRouter

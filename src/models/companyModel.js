@@ -87,6 +87,17 @@ const companySchema = mongoose.Schema(
             ref:"Users",
             required: [true,"User id is required"],
         },
+        ownerShip:[{
+            user:{
+                type: mongoose.Schema.Types.ObjectId,
+                ref:"Users",
+                required: [true,"User id is required"],
+            },
+            share:{
+                type: Number,
+                required: true
+            },
+        }],
     },
     {timestamps:{createdAt:true,updatedAt:true}}
 )
