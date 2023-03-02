@@ -71,13 +71,13 @@ const companySchema = mongoose.Schema(
             },
             zip_code:{
                 type: String,
-                required: [true,"State is required"],
+                required: [true,"zip code is required"],
                 lowercase: true,
                 trim: true
             },
             country:{
                 type: String,
-                required: [true,"State is required"],
+                required: [true,"country is required"],
                 lowercase: true,
                 trim: true
             }

@@ -12,7 +12,7 @@ async function addOrderService(order) {
     } catch (error) {
         console.log(error);
         const formatedErr = errorFormatter(error);
-        return {success:false,error:true,message: formatedErr}
+        return {success:false,error:formatedErr}
     }
 }
 

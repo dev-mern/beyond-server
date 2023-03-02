@@ -16,7 +16,8 @@ async function addPackageCtl(req,res,next) {
 async function getPackagesCtl(req,res,next) {
     const packages = await getAllPackagesService();
     
-    if (!packages.success) {
+    if (!Array.isArray(packages)) {
+        console.log("5000 co");
         return res.status(500).json(packages);
     }
     

@@ -6,7 +6,7 @@ async function addOrderCtl(req,res,next) {
     const isExistUser = await checkUserExist({_id:req.body?.user_id});
     console.log(isExistUser);
     if (!isExistUser?._id) {
-        return res.status(401).json({success:false,error:{user:"Not a user!"}});
+        return res.status(401).json({success:false,error:{common:"Not a user!"}});
     }
     // check payment information
 
