@@ -43,10 +43,10 @@ async function verifyVerificationCodeUserCtl(req,res,next) {
         return res.status(422).json(user);
     }
     // match the password
-    const isValidPassword = await bcrypt.compare(body_password,user.password);
-    if (!isValidPassword) {
-        return res.status(401).json({success:false,data:{},error:{common:"Email and password mismatched"}});
-    }
+    // const isValidPassword = await bcrypt.compare(body_password,user.password);
+    // if (!isValidPassword) {
+    //     return res.status(401).json({success:false,data:{},error:{common:"Email and password mismatched"}});
+    // }
     // match verification code
     if (user.verificationCode !== parseInt(verification_code)) {
         return res.status(401).json({success:false,data:{},error:{common:"Wrong verification code."}});
