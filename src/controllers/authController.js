@@ -29,9 +29,25 @@ async function registerUserCtl(req,res,next) {
         const deleteuser = await deleteUserByUserIdService(user._id);
         return res.status(422).json({success:false,data:{},error:{common:"Failed to send verification code"}})
     }
+
+    // generate and send token also
+    const userObject = {
+        _id: user._id,
+        lname: user.lname,
+        fname: user.fname,
+        email: user.email,
+        mobile: user.mobile,
+        referral_id: user.referral_id,
+        referenced_by: user.referenced_by,
+        verified: user.verified,
+        joined: user.createdAt,
+        active: user.active,
+    }
+    const token = jwt.sign(userObject,env.jwt_secret,{expiresIn:env.jwt_expire});
     
-    const {_id,fname,lname,email,mobile,referral_id,referenced_by,verified,role,createdAt,updatedAt,active} = user??{};
-    return res.status(200).json({success:true,data:{_id,fname,lname,email,mobile,referral_id,referenced_by,active,verified,role,createdAt,updatedAt}});
+    // const {_id,fname,lname,email,mobile,referral_id,referenced_by,verified,role,createdAt,updatedAt,active} = user??{};
+    // return res.status(200).json({success:true,data:{_id,fname,lname,email,mobile,referral_id,referenced_by,active,verified,role,createdAt,updatedAt}});
+    return res.status(200).json({success:true,data:{...userObject,token}});
 }
 
 // verify new user email
