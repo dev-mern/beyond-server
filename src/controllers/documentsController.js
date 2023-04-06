@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const mime = require('mime');
-const { addFilesService, getFilesInfoByUserService, getFilesByCompanyIdAndAccessIdService, getFileByuserIdAndDocIdService, getFileByAccessIdAndDocIdService, updateSingleFileByUserIdAndDocIdService, getDocByDocID, deleteDocByDocIdService } = require("../services/documetService");
+const { addFilesService, getFilesInfoByUserService, getFilesByCompanyIdAndAccessIdService, getFileByuserIdAndDocIdService, getFileByAccessIdAndDocIdService, updateSingleFileByUserIdAndDocIdService, getDocByDocID, deleteDocByDocIdService, getAllDocsService } = require("../services/documetService");
 const { getFileExtension } = require('../utils/uploader');
 
 // add a list of document controller
@@ -62,7 +62,8 @@ async function getDocumentsInfoByUser(req,res,next) {
 // get list of all documents by a access ID
 async function getDocsInfoByAccessUserIdCtl(req,res,next) {
     const {user_id,company_id} = req.params;
-    // console.table(req.params)
+    const {page,limit} = req.query;
+    
     try {
         const {_id:decodedUser_id}= req.decodedUser??{};
         
@@ -76,7 +77,7 @@ async function getDocsInfoByAccessUserIdCtl(req,res,next) {
         }
         
 
-        const filesRes = await getFilesByCompanyIdAndAccessIdService(user_id,company_id);
+        const filesRes = await getFilesByCompanyIdAndAccessIdService(user_id,company_id,page,limit);
         // remove the access list from docs
         const files = filesRes.data.map(doc=>{
             const {access,...rest} = doc.toObject();
@@ -94,7 +95,7 @@ async function getDocsInfoByAccessUserIdCtl(req,res,next) {
 // download the file by file id 
 async function downloadDocbyDocIdCtl(req,res,next) {
     const {doc_id} = req.params;
-    console.table(req.params)
+    
     try {
         const {_id:decodedUser_id}= req.decodedUser??{};
 
@@ -227,6 +228,11 @@ async function deleteDocByDocIdCtl(req,res,next) {
     // console.table(req.params)
     try {
         const {_id:decodedUser_id}= req.decodedUser??{};
+        // check here if he is an admin or owner of the document
+        const docInfo = await getDocByDocID(doc_id);
+        // if (docInfo.user_id === req.decodedUser._id || req.decodedUser.role === 'admin' || req.decodedUser.role === 'super_admin') {
+            // then only allow to delete the file
+        // }
         
         // delete the database info
         const deleteRes = await deleteDocByDocIdService(doc_id);
@@ -245,6 +251,21 @@ async function deleteDocByDocIdCtl(req,res,next) {
     }
 }
 
+// get all files with pagination
+async function getAllDocsInfoCtl(req,res,next) { 
+    const {page,limit,name} = req.query;
+    console.log({page,limit});
+    try {
+        // get the list of docs info
+        const docsRes = await getAllDocsService(page,limit,name);
+        return res.status(200).json(docsRes);
+        
+    } catch (error) {
+        console.log(error,"uuuuuuuuuuuuuuuu");
+        return res.status(500).json({success:false,data:{},error:error.message});
+    }
+}
+
 
 
 
@@ -255,5 +276,5 @@ module.exports = {
     downloadDocbyDocIdCtl,
     updateDocByDocIdCtl,
     deleteDocByDocIdCtl,
-
+    getAllDocsInfoCtl,
 }

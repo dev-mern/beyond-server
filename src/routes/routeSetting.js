@@ -5,6 +5,7 @@ const { creditRouter } = require("./creditRouter");
 const { documentsRouter } = require("./documentsRouter");
 const { orderRouter } = require("./orderRouter");
 const { packageRouter } = require("./packageRoute");
+const { testimonialRouter } = require("./testimonial");
 
 function routeSetting(app) {
 
@@ -13,6 +14,12 @@ function routeSetting(app) {
 
     // Company routes setup
     app.use("/company",companyRouter);
+    
+    // Credit card routes setup
+    app.use("/credit",creditRouter);
+
+    // Credit card routes setup
+    app.use("/documents",documentsRouter);
 
     // Package routes setup
     app.use("/packages",packageRouter);
@@ -20,11 +27,10 @@ function routeSetting(app) {
     // Package routes setup
     app.use("/order",orderRouter);
 
-    // Credit card routes setup
-    app.use("/credit",creditRouter);
+    // Testimonial routes setup
+    app.use("/testimonials",testimonialRouter);
 
-    // Credit card routes setup
-    app.use("/documents",documentsRouter);
+
 
     // not found handler
     app.use(notFoundHandler);

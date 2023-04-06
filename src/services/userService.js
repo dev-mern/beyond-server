@@ -39,6 +39,36 @@ async function getUserByEmailService(email) {
         return {success:false,error: formatedErr}
     }
 }
+// get all users
+async function getAllUsersService(page=0,limit=20,filters) {
+    const formatedFilter = {};
+    for(const key in filters){
+        formatedFilter[key] = {$regex: filters[key], $options: 'i'};
+    }
+    try {
+        const users = await UserModel.find(formatedFilter).skip(page*limit).limit(limit).select({password:0});
+        return users;
+    } catch (error) {
+        console.log(error);
+        const formatedErr = errorFormatter(error);
+        return {success:false,error: formatedErr}
+    }
+}
+// count all users
+async function countAllUsersService(filters) {
+    const formatedFilter = {};
+    for(const key in filters){
+        formatedFilter[key] = {$regex: filters[key], $options: 'i'};
+    }
+    try {
+        const users = await UserModel.countDocuments(formatedFilter);
+        return users;
+    } catch (error) {
+        console.log(error);
+        const formatedErr = errorFormatter(error);
+        return {success:false,error: formatedErr}
+    }
+}
 
 // get a single user by user id
 async function getUserByUserIdService(userId) {
@@ -98,14 +128,29 @@ async function deleteUserByUserIdService(user_id) {
         return {success:false,error: formatedErr}
     }
 }
+// update user role by user id, 
+async function updateAdminRoleByUserIdService(user_id,role) {
+    // console.log(updateDoc,"updateDoc");
+    try {
+        const user = await UserModel.findOneAndUpdate({_id:user_id},{role},{new:true,runValidators:true});
+        return user;
+    } catch (error) {
+        console.log(error);
+        const formatedErr = errorFormatter(error);
+        return {success:false,error: formatedErr}
+    }
+}
 
 module.exports = {
     adduserService,
     checkUserExist,
     getUserByEmailService,
+    getAllUsersService,
+    countAllUsersService,
     getUserByUserIdService,
     addCompanyIdToUserService,
     updateUserProfileByIdService,
     deleteUserByUserIdService,
+    updateAdminRoleByUserIdService,
 }
 

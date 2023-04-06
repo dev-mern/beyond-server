@@ -1,6 +1,6 @@
 const express = require("express");
-const { addDocumentsCtl, getDocumentsInfoByUser, getDocsInfoByAccessUserIdCtl, downloadDocbyDocIdCtl, updateDocByDocIdCtl, deleteDocByDocIdCtl } = require("../controllers/documentsController");
-const { checkLogin } = require("../middlewares/authMiddleware");
+const { addDocumentsCtl, getDocumentsInfoByUser, getDocsInfoByAccessUserIdCtl, downloadDocbyDocIdCtl, updateDocByDocIdCtl, deleteDocByDocIdCtl, getAllDocsInfoCtl } = require("../controllers/documentsController");
+const { checkLogin, isAdmin } = require("../middlewares/authMiddleware");
 const { uploader } = require("../utils/uploader");
 
 
@@ -9,6 +9,16 @@ const documentsRouter = express.Router();
 documentsRouter.route("/")
 // .get(checkLogin,getDocumentsCtl)
     .post(checkLogin,uploader.fields([{name:"bookkeeping_files",maxCount:50},{name:"tax_files",maxCount:50},]),addDocumentsCtl)
+
+    // ___________admin routes start_________________ 
+// get all documents information
+documentsRouter.route("/admin/files")   
+    // "/documents/admin/files?name=asd&limit=5&page=3"
+    .get(checkLogin,isAdmin,getAllDocsInfoCtl)
+    // ___________admin routes end_________________ 
+
+
+
 
 // get an existing document
 /**
@@ -71,8 +81,10 @@ documentsRouter.route("/:user_id")
  */
 documentsRouter.route("/:user_id/:company_id")
     .get(checkLogin,getDocsInfoByAccessUserIdCtl)
-
     
+    
+    
+
 module.exports = {
     documentsRouter
 }

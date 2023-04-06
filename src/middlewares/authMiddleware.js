@@ -36,6 +36,7 @@ async function processRegisterData(req,res,next) {
 async function checkLogin(req,res,next) {
     try {
         const bearerToken = req.headers['authorization'];
+       
         if (!bearerToken) {
             return res.status(401).json({success:false,error:{common: "Token is required for this operation"}});
         }
@@ -64,11 +65,36 @@ async function checkLogin(req,res,next) {
         if (error.message === 'jwt expired') {
             console.log(error.message);
             return res.status(401).json({success:false,error:{common: "Token has been expired."}});
+        }else if (error.message === 'invalid signature') {
+            return res.status(401).json({success:false,error:{common: "invalid token"}});
         }
         console.log(error);
         return res.status(500).json({success:false,error:{common: "Serverside error occured."}});
     }
 }
+async function isAdmin(req,res,next) {
+    try {
+        if (req.decodedUser?.verified && (req.decodedUser?.role === 'admin' || req.decodedUser?.role === 'super_admin')) {
+            return next();
+        }
+        return res.status(403).json({success:false,error:{common: "Only Admin is allowed."}});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({success:false,error:{common: "Serverside error occured."}});
+    }
+}
+async function isSuperAdmin(req,res,next) {
+    try {
+        if (req.decodedUser?.verified && req.decodedUser?.role === 'super_admin') {
+            return next();
+        }
+        return res.status(403).json({success:false,error:{common: "Only super admin is allowed."}});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({success:false,error:{common: "Serverside error occured."}});
+    }
+}
+
 async function checkExistUserByEmail(req,res,next) {
     const email = req.body.email;
     try {
@@ -87,5 +113,7 @@ async function checkExistUserByEmail(req,res,next) {
 module.exports = {
     processRegisterData,
     checkLogin,
+    isAdmin,
+    isSuperAdmin,
     checkExistUserByEmail,
 }

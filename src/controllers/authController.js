@@ -1,4 +1,4 @@
-const { adduserService, getUserByEmailService, updateUserProfileByIdService, getUserByUserIdService, deleteUserByUserIdService } = require("../services/userService");
+const { adduserService, getUserByEmailService, updateUserProfileByIdService, getUserByUserIdService, deleteUserByUserIdService, updateAdminRoleByUserIdService, getAllUsersService, countAllUsersService } = require("../services/userService");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { env } = require("../utils/env_init");
@@ -97,18 +97,21 @@ async function loginUserCtl(req,res,next) {
             lname: user.lname,
             fname: user.fname,
             email: user.email,
+            role: user.role,
             mobile: user.mobile,
+            active: user.active,
             referral_id: user.referral_id,
             referenced_by: user.referenced_by,
             verified: user.verified,
-            joined: user.createdAt
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
         }
         // generate token 
         const token = jwt.sign(userObject,env.jwt_secret,{expiresIn:env.jwt_expire});
         return res.status(200).json({success:true,data:{access:{token,expiresIn:env.jwt_expire},user:userObject},error:{}});
     } catch (error) {
         console.log(error);
-        res.status(500).json({success:false,data:{},error:{common:"Unknow error occured inserver"}});
+        res.status(500).json({success:false,data:{},error:{common:"Unknow error occured in server"}});
     }
 }
 
@@ -135,7 +138,7 @@ async function updateProfileCommonInfo(req,res,next) {
         return res.status(200).json({success:true,data:updateRes,error:{}});
     } catch (error) {
         console.log(error);
-        res.status(500).json({success:false,data:{},error:{common:"Unknow error occured inserver"}});
+        res.status(500).json({success:false,data:{},error:{common:"Unknow error occured in server"}});
     }
 }
 
@@ -164,7 +167,38 @@ async function updatePasswordCtl(req,res,next) {
         return res.status(200).json({success:true,data:updateRes,error:{}});
     } catch (error) {
         console.log(error);
-        res.status(500).json({success:false,data:{},error:{common:"Unknow error occured inserver"}});
+        res.status(500).json({success:false,data:{},error:{common:"Unknow error occured in server"}});
+    }
+}
+async function updateAdminRoleCtl(req,res,next) {
+   const role_user_id = req.body.role_user_id;
+   const role = req.body.role;
+    try {
+        if (!role || !role_user_id) {
+            return res.status(422).json({success:false,data:{},error:{common:"Role and id is required"}});
+        }
+        const updateRes = await updateAdminRoleByUserIdService(role_user_id,role);
+        // console.log(updateRes,"updateRes");
+        if (updateRes?._id) {
+            return res.status(200).json({success:true,data:updateRes,error:{}});
+        }
+        return res.status(422).json({success:false,data:updateRes ||{},error:{common:"Faild to update"}});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({success:false,data:{},error:{common:"Unknow error occured in server"}});
+    }
+}
+async function getUserListCtl(req,res,next) {
+    const {limit,page,...rest} = req.query;
+    
+    try {
+        const users = await getAllUsersService(page,limit,rest);
+        const total = await countAllUsersService(rest);
+        // remove password
+        return res.status(200).json({success:true,data:{total,users},error:{}});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({success:false,data:{},error:{common:"Unknow error occured in server"}});
     }
 }
 
@@ -173,6 +207,8 @@ module.exports = {
     loginUserCtl,
     updateProfileCommonInfo,
     updatePasswordCtl,
+    updateAdminRoleCtl,
     verifyVerificationCodeUserCtl,
+    getUserListCtl,
 }
 

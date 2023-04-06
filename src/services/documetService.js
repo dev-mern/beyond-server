@@ -37,9 +37,21 @@ async function getFilesInfoByUserService(user_id) {
 }
 
 // get the list of file info by a access company Id 
-async function getFilesByCompanyIdAndAccessIdService(access_user_id,company_id) {
+async function getFilesByCompanyIdAndAccessIdService(access_user_id,company_id,queryParam) {
+    const limit = queryParam.limit || 10;
+    const page = queryParam.page || 1;
+    let query = {
+        company : company_id,
+        access: {$elemMatch:{$eq:access_user_id}}
+    }
+    if (queryParam.name) {
+        query.name = {$regex:queryParam.name, $options:"i"};
+    }
     try {
-        const files = await FileModel.find({company:company_id,access:{$elemMatch:{$eq:access_user_id}}}).populate({path:"user",select:{'fname':1,'lname':1}});
+        const files = await FileModel.find(query)
+        .populate({path:"user",select:{'fname':1,'lname':1}})
+        .skip((page-1)*limit).limit(limit);
+
         return {success:true,error:false,message: "",data:files};
     } catch (error) {
         console.log(error);
@@ -105,6 +117,18 @@ async function deleteDocByDocIdService(doc_id) {
         return {success:false,error:true,message: formatedErr}
     }
 }
+// get all docs by pagination
+async function getAllDocsService(page=0,limit=10,name='') {
+    try {
+        const nameRegex = new RegExp(name,'i');
+        const files = await FileModel.find({name:nameRegex}).skip(page*limit).limit(limit).populate('company');
+        return {success:true,error:{},data:files};
+    } catch (error) {
+        console.log(error);
+        const formatedErr = errorFormatter(error);
+        return {success:false,error:{common:formatedErr}}
+    }
+}
 
 
 
@@ -116,5 +140,6 @@ module.exports = {
     getFileByAccessIdAndDocIdService,
     updateSingleFileByUserIdAndDocIdService,
     getDocByDocID,
+    getAllDocsService,
     deleteDocByDocIdService,
 }

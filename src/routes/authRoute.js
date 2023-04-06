@@ -1,6 +1,6 @@
 const express = require("express");
-const { registerUserCtl, loginUserCtl, updateProfileCommonInfo, updatePasswordCtl, verifyVerificationCodeUserCtl } = require("../controllers/authController");
-const { processRegisterData, checkLogin, checkExistUserByEmail } = require("../middlewares/authMiddleware");
+const { registerUserCtl, loginUserCtl, updateProfileCommonInfo, updatePasswordCtl, verifyVerificationCodeUserCtl, updateAdminRoleCtl, getUserListCtl } = require("../controllers/authController");
+const { processRegisterData, checkLogin, checkExistUserByEmail, isSuperAdmin } = require("../middlewares/authMiddleware");
 
 const authRouter = express.Router();
 
@@ -23,7 +23,17 @@ authRouter.route("/users/user/:user_id/password")
 authRouter.route("/users/user/:user_id")
     .patch(checkLogin,updateProfileCommonInfo)
     // .get()
+    
+    
+    
+    // admin routes
+    authRouter.route("/admin/role")
+        .patch(checkLogin,isSuperAdmin,updateAdminRoleCtl)
+        // .get()
 
+    authRouter.route("/admin/users")
+        .get(checkLogin,isSuperAdmin,getUserListCtl)
+        // .get()
 
 module.exports = {
     authRouter
